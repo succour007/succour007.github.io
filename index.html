@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Succour — From Stress to Happiness</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0f0e17;
+    --surface: #1a1829;
+    --card: #221f35;
+    --accent: #ff6b6b;
+    --gold: #ffd166;
+    --mint: #06d6a0;
+    --text: #fffffe;
+    --muted: #a7a9be;
+    --radius: 18px;
+    --tg-theme-bg-color: #0f0e17;
+  }
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+font-family: ‘DM Sans’, sans-serif;
+background: var(–bg);
+color: var(–text);
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* ── BACKGROUND MESH ── */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background:
+radial-gradient(ellipse 60% 40% at 20% 10%, rgba(255,107,107,0.12) 0%, transparent 60%),
+radial-gradient(ellipse 50% 50% at 80% 80%, rgba(6,214,160,0.10) 0%, transparent 60%),
+radial-gradient(ellipse 40% 40% at 60% 30%, rgba(255,209,102,0.06) 0%, transparent 50%);
+pointer-events: none;
+z-index: 0;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; flex-direction: column; min-height: 100vh; position: relative; z-index: 1; }
+.screen.active { display: flex; }
+
+/* ── LANDING ── */
+#landing {
+align-items: center;
+justify-content: center;
+padding: 32px 24px;
+text-align: center;
+animation: fadeUp 0.7s ease both;
+}
+
+.logo-wrap {
+width: 90px; height: 90px;
+border-radius: 50%;
+background: linear-gradient(135deg, #ff6b6b, #ffd166);
+display: flex; align-items: center; justify-content: center;
+font-size: 36px;
+margin-bottom: 24px;
+box-shadow: 0 0 40px rgba(255,107,107,0.4);
+animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+0%,100% { box-shadow: 0 0 40px rgba(255,107,107,0.4); }
+50% { box-shadow: 0 0 70px rgba(255,107,107,0.7); }
+}
+
+h1.brand {
+font-family: ‘Playfair Display’, serif;
+font-size: 2.4rem;
+font-weight: 700;
+line-height: 1.1;
+background: linear-gradient(135deg, #ff6b6b, #ffd166);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 12px;
+}
+
+.tagline {
+font-size: 1rem;
+color: var(–muted);
+line-height: 1.6;
+max-width: 280px;
+margin: 0 auto 36px;
+}
+
+.mood-row {
+display: flex;
+gap: 12px;
+margin-bottom: 36px;
+justify-content: center;
+flex-wrap: wrap;
+}
+
+.mood-btn {
+background: var(–card);
+border: 1.5px solid rgba(255,255,255,0.08);
+border-radius: 50px;
+padding: 10px 20px;
+font-size: 0.85rem;
+color: var(–text);
+cursor: pointer;
+transition: all 0.25s ease;
+font-family: ‘DM Sans’, sans-serif;
+}
+
+.mood-btn:hover, .mood-btn.selected {
+border-color: var(–accent);
+background: rgba(255,107,107,0.15);
+transform: translateY(-2px);
+color: #fff;
+}
+
+.cta-btn {
+background: linear-gradient(135deg, #ff6b6b, #ffd166);
+color: #0f0e17;
+font-weight: 700;
+font-size: 1rem;
+border: none;
+border-radius: 50px;
+padding: 16px 40px;
+cursor: pointer;
+width: 100%;
+max-width: 300px;
+transition: opacity 0.2s, transform 0.2s;
+font-family: ‘DM Sans’, sans-serif;
+letter-spacing: 0.02em;
+}
+
+.cta-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+.cta-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.divider { width: 40px; height: 2px; background: linear-gradient(90deg, #ff6b6b, #ffd166); border-radius: 2px; margin: 24px auto; }
+
+/* ── WAITING ── */
+#waiting {
+align-items: center;
+justify-content: center;
+padding: 32px 24px;
+text-align: center;
+animation: fadeUp 0.5s ease both;
+}
+
+.waiting-anim {
+position: relative;
+width: 100px; height: 100px;
+margin-bottom: 32px;
+}
+
+.ring {
+position: absolute;
+border-radius: 50%;
+border: 2px solid transparent;
+animation: spin 2s linear infinite;
+}
+
+.ring:nth-child(1) { inset: 0; border-top-color: #ff6b6b; }
+.ring:nth-child(2) { inset: 12px; border-right-color: #ffd166; animation-duration: 1.4s; animation-direction: reverse; }
+.ring:nth-child(3) { inset: 24px; border-bottom-color: #06d6a0; animation-duration: 1.8s; }
+
+.ring-heart { position: absolute; inset: 36px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.wait-title { font-family: ‘Playfair Display’, serif; font-size: 1.6rem; margin-bottom: 10px; }
+.wait-sub { color: var(–muted); font-size: 0.9rem; line-height: 1.6; max-width: 260px; }
+
+.dots span {
+display: inline-block;
+width: 6px; height: 6px;
+border-radius: 50%;
+background: var(–accent);
+margin: 0 3px;
+animation: dot 1.4s ease-in-out infinite;
+}
+.dots span:nth-child(2) { animation-delay: 0.2s; background: var(–gold); }
+.dots span:nth-child(3) { animation-delay: 0.4s; background: var(–mint); }
+@keyframes dot { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+
+/* ── CHAT ── */
+#chat { padding: 0; }
+
+.chat-header {
+padding: 14px 16px;
+background: var(–surface);
+border-bottom: 1px solid rgba(255,255,255,0.06);
+display: flex;
+align-items: center;
+gap: 12px;
+position: sticky;
+top: 0;
+z-index: 10;
+}
+
+.admin-avatar {
+width: 40px; height: 40px;
+border-radius: 50%;
+background: linear-gradient(135deg, #ff6b6b, #ffd166);
+display: flex; align-items: center; justify-content: center;
+font-size: 18px;
+flex-shrink: 0;
+}
+
+.admin-info h3 { font-size: 0.95rem; font-weight: 600; }
+.online-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(–mint); margin-right: 5px; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.admin-info p { font-size: 0.75rem; color: var(–muted); }
+
+.mood-badge {
+margin-left: auto;
+background: rgba(255,107,107,0.15);
+border: 1px solid rgba(255,107,107,0.3);
+border-radius: 50px;
+padding: 4px 12px;
+font-size: 0.72rem;
+color: #ff6b6b;
+}
+
+.messages {
+flex: 1;
+overflow-y: auto;
+padding: 16px;
+display: flex;
+flex-direction: column;
+gap: 12px;
+min-height: 0;
+}
+
+.msg {
+display: flex;
+flex-direction: column;
+max-width: 78%;
+animation: msgIn 0.3s ease both;
+}
+
+@keyframes msgIn { from { opacity:0; transform: translateY(10px); } }
+
+.msg.user { align-self: flex-end; align-items: flex-end; }
+.msg.admin { align-self: flex-start; align-items: flex-start; }
+
+.bubble {
+padding: 11px 15px;
+border-radius: 18px;
+font-size: 0.9rem;
+line-height: 1.5;
+word-break: break-word;
+}
+
+.msg.user .bubble {
+background: linear-gradient(135deg, #ff6b6b, #e05252);
+color: #fff;
+border-bottom-right-radius: 4px;
+}
+
+.msg.admin .bubble {
+background: var(–card);
+border: 1px solid rgba(255,255,255,0.07);
+border-bottom-left-radius: 4px;
+}
+
+.msg-time { font-size: 0.68rem; color: var(–muted); margin-top: 3px; }
+
+.typing-bubble {
+background: var(–card);
+border: 1px solid rgba(255,255,255,0.07);
+border-radius: 18px;
+border-bottom-left-radius: 4px;
+padding: 12px 16px;
+display: none;
+align-items: center;
+gap: 5px;
+}
+
+.typing-bubble.show { display: flex; }
+.typing-bubble span {
+width: 6px; height: 6px;
+border-radius: 50%;
+background: var(–muted);
+animation: dot 1.4s ease-in-out infinite;
+}
+.typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+.typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+
+.chat-input-wrap {
+padding: 12px 12px 20px;
+background: var(–surface);
+border-top: 1px solid rgba(255,255,255,0.06);
+display: flex;
+gap: 8px;
+align-items: flex-end;
+}
+
+.chat-input {
+flex: 1;
+background: var(–card);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 22px;
+padding: 11px 16px;
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.9rem;
+outline: none;
+resize: none;
+max-height: 100px;
+overflow-y: auto;
+transition: border-color 0.2s;
+}
+
+.chat-input:focus { border-color: rgba(255,107,107,0.5); }
+.chat-input::placeholder { color: var(–muted); }
+
+.send-btn {
+width: 44px; height: 44px;
+border-radius: 50%;
+background: linear-gradient(135deg, #ff6b6b, #ffd166);
+border: none;
+cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+font-size: 18px;
+transition: transform 0.2s, opacity 0.2s;
+flex-shrink: 0;
+}
+.send-btn:hover { transform: scale(1.08); }
+.send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── ADMIN PANEL ── */
+#admin-panel {
+padding: 0;
+animation: fadeUp 0.5s ease both;
+}
+
+.admin-header {
+padding: 16px;
+background: var(–surface);
+border-bottom: 1px solid rgba(255,255,255,0.06);
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.admin-header h2 { font-family: ‘Playfair Display’, serif; font-size: 1.2rem; }
+.badge-count {
+background: var(–accent);
+color: #fff;
+border-radius: 50px;
+padding: 2px 8px;
+font-size: 0.75rem;
+font-weight: 600;
+margin-left: auto;
+}
+
+.queue-list { padding: 12px; display: flex; flex-direction: column; gap: 10px; flex: 1; overflow-y: auto; }
+
+.queue-card {
+background: var(–card);
+border: 1px solid rgba(255,255,255,0.07);
+border-radius: var(–radius);
+padding: 14px 16px;
+cursor: pointer;
+transition: border-color 0.2s, transform 0.2s;
+}
+.queue-card:hover { border-color: rgba(255,107,107,0.4); transform: translateY(-1px); }
+
+.queue-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.user-ava { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #665af0, #06d6a0); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.queue-name { font-weight: 600; font-size: 0.9rem; }
+.queue-time { margin-left: auto; font-size: 0.72rem; color: var(–muted); }
+.queue-mood { font-size: 0.78rem; color: var(–accent); }
+.queue-preview { font-size: 0.82rem; color: var(–muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.reply-area { padding: 12px; display: flex; flex-direction: column; gap: 8px; background: var(–surface); border-top: 1px solid rgba(255,255,255,0.06); }
+.reply-area textarea {
+background: var(–card);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 14px;
+padding: 12px;
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.88rem;
+resize: none;
+height: 70px;
+outline: none;
+}
+.reply-area textarea:focus { border-color: rgba(255,107,107,0.4); }
+
+.reply-actions { display: flex; gap: 8px; }
+.btn-sm {
+flex: 1;
+padding: 10px;
+border-radius: 10px;
+border: none;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.82rem;
+font-weight: 600;
+cursor: pointer;
+transition: opacity 0.2s;
+}
+.btn-primary { background: linear-gradient(135deg, #ff6b6b, #ffd166); color: #0f0e17; }
+.btn-secondary { background: var(–card); color: var(–muted); border: 1px solid rgba(255,255,255,0.08); }
+
+/* ── UTILS ── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } }
+
+.section-label {
+font-size: 0.7rem;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 12px;
+}
+
+.empty-state { text-align: center; padding: 48px 24px; color: var(–muted); }
+.empty-state div { font-size: 2.5rem; margin-bottom: 12px; }
+
+#date-label {
+text-align: center;
+font-size: 0.72rem;
+color: var(–muted);
+background: rgba(255,255,255,0.05);
+border-radius: 50px;
+padding: 4px 12px;
+display: inline-block;
+align-self: center;
+}
+</style>
+
+</head>
+<body>
+
+<!-- ══ SCREEN 1: LANDING ══ -->
+
+<div id="landing" class="screen active">
+  <div class="logo-wrap">🌸</div>
+  <h1 class="brand">Succour</h1>
+  <p class="tagline">A bridge from stress to happiness — through real human conversation.</p>
+  <div class="divider"></div>
+  <p class="section-label">How are you feeling right now?</p>
+  <div class="mood-row">
+    <button class="mood-btn" onclick="selectMood(this,'😟 Anxious')">😟 Anxious</button>
+    <button class="mood-btn" onclick="selectMood(this,'😔 Sad')">😔 Sad</button>
+    <button class="mood-btn" onclick="selectMood(this,'😤 Overwhelmed')">😤 Overwhelmed</button>
+    <button class="mood-btn" onclick="selectMood(this,'😕 Lost')">😕 Lost</button>
+    <button class="mood-btn" onclick="selectMood(this,'😌 Just need to talk')">😌 Just need to talk</button>
+  </div>
+  <button class="cta-btn" id="connect-btn" onclick="goToWaiting()" disabled>Connect with a Helper</button>
+</div>
+
+<!-- ══ SCREEN 2: WAITING ══ -->
+
+<div id="waiting" class="screen">
+  <div class="waiting-anim">
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring-heart">💛</div>
+  </div>
+  <h2 class="wait-title">Finding your helper…</h2>
+  <p class="wait-sub">A caring human is being connected to you. This usually takes under a minute.</p>
+  <br>
+  <div class="dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- ══ SCREEN 3: CHAT ══ -->
+
+<div id="chat" class="screen">
+  <div class="chat-header">
+    <div class="admin-avatar">🌿</div>
+    <div class="admin-info">
+      <h3>Succour Helper</h3>
+      <p><span class="online-dot"></span>Online · here for you</p>
+    </div>
+    <div class="mood-badge" id="mood-badge">😟 Anxious</div>
+  </div>
+
+  <div class="messages" id="messages">
+    <div id="date-label">Today</div>
+    <div class="typing-bubble" id="typing">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="chat-input-wrap">
+    <textarea class="chat-input" id="msg-input" placeholder="Share what's on your mind…" rows="1"
+      oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+    <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: ADMIN PANEL ══ -->
+
+<div id="admin-panel" class="screen">
+  <div class="admin-header">
+    <div>🛡️</div>
+    <h2>Admin Panel</h2>
+    <span class="badge-count" id="queue-count">0</span>
+  </div>
+  <div class="queue-list" id="queue-list">
+    <div class="empty-state"><div>💬</div>No active requests yet</div>
+  </div>
+  <div class="reply-area" id="reply-area" style="display:none">
+    <p style="font-size:0.78rem;color:var(--muted)">Replying to: <strong id="replying-to">—</strong></p>
+    <textarea id="admin-reply" placeholder="Write a warm, supportive reply…"></textarea>
+    <div class="reply-actions">
+      <button class="btn-sm btn-secondary" onclick="cancelReply()">Cancel</button>
+      <button class="btn-sm btn-primary" onclick="sendAdminReply()">Send Reply 💛</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── TELEGRAM WEB APP INIT ──
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  tg.setHeaderColor('#0f0e17');
+  tg.setBackgroundColor('#0f0e17');
+}
+
+// ── STATE ──
+let selectedMood = '';
+let currentScreen = 'landing';
+let messages = [];
+let adminQueue = [
+  { id: 1, name: 'Alex M.', mood: '😟 Anxious', time: '2m ago', preview: 'I have been feeling very stressed about…', msgs: [] },
+  { id: 2, name: 'Priya K.', mood: '😔 Sad', time: '5m ago', preview: 'Can someone just listen to me right now?', msgs: [] }
+];
+let activeReplyId = null;
+
+// ── HELPERS ──
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  currentScreen = id;
+}
+
+function now() {
+  return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+// ── MOOD SELECTION ──
+function selectMood(btn, mood) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedMood = mood;
+  document.getElementById('connect-btn').disabled = false;
+}
+
+// ── WAITING → CHAT ──
+function goToWaiting() {
+  show('waiting');
+  document.getElementById('mood-badge').textContent = selectedMood;
+  // Simulate admin connecting after 3s
+  setTimeout(() => {
+    show('chat');
+    setTimeout(showTyping, 500);
+    setTimeout(() => {
+      hideTyping();
+      addAdminMsg(`Hey 💛 I'm here with you. I can see you're feeling ${selectedMood}. Take a breath — you're not alone. What's been weighing on you?`);
+    }, 2200);
+  }, 3000);
+}
+
+// ── CHAT FUNCTIONS ──
+function showTyping() {
+  const t = document.getElementById('typing');
+  t.classList.add('show');
+  scrollBottom();
+}
+function hideTyping() {
+  document.getElementById('typing').classList.remove('show');
+}
+
+function addMsg(text, type) {
+  const wrap = document.getElementById('messages');
+  const typing = document.getElementById('typing');
+  const div = document.createElement('div');
+  div.className = `msg ${type}`;
+  div.innerHTML = `<div class="bubble">${text}</div><span class="msg-time">${now()}</span>`;
+  wrap.insertBefore(div, typing);
+  scrollBottom();
+  messages.push({ text, type, time: now() });
+}
+
+function addAdminMsg(text) { addMsg(text, 'admin'); }
+function addUserMsg(text)  { addMsg(text, 'user'); }
+
+function scrollBottom() {
+  const m = document.getElementById('messages');
+  m.scrollTop = m.scrollHeight;
+}
+
+function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text) return;
+  addUserMsg(text);
+  input.value = '';
+  autoResize(input);
+  input.focus();
+
+  // Simulate admin typing + reply
+  setTimeout(showTyping, 800);
+  const replies = [
+    "That sounds really hard. Can you tell me more about when this started?",
+    "I hear you. It's okay to feel this way. You're doing so well just by reaching out 💛",
+    "Thank you for sharing that with me. What would make you feel even a little bit lighter right now?",
+    "You're stronger than you think. Let's work through this together, one step at a time. 🌿",
+    "That makes complete sense. Have you been able to talk to anyone else about this?"
+  ];
+  const reply = replies[Math.floor(Math.random() * replies.length)];
+  setTimeout(() => {
+    hideTyping();
+    addAdminMsg(reply);
+  }, 2000 + Math.random() * 1500);
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+// ── ADMIN PANEL ──
+function renderQueue() {
+  const list = document.getElementById('queue-list');
+  document.getElementById('queue-count').textContent = adminQueue.length;
+  if (!adminQueue.length) {
+    list.innerHTML = '<div class="empty-state"><div>💬</div>No active requests yet</div>';
+    return;
+  }
+  list.innerHTML = adminQueue.map(u => `
+    <div class="queue-card" onclick="selectUser(${u.id})">
+      <div class="queue-card-top">
+        <div class="user-ava">👤</div>
+        <div>
+          <div class="queue-name">${u.name}</div>
+          <div class="queue-mood">${u.mood}</div>
+        </div>
+        <div class="queue-time">${u.time}</div>
+      </div>
+      <div class="queue-preview">${u.preview}</div>
+    </div>
+  `).join('');
+}
+
+function selectUser(id) {
+  activeReplyId = id;
+  const user = adminQueue.find(u => u.id === id);
+  document.getElementById('replying-to').textContent = `${user.name} · ${user.mood}`;
+  document.getElementById('reply-area').style.display = 'flex';
+  document.getElementById('reply-area').style.flexDirection = 'column';
+  document.getElementById('admin-reply').focus();
+}
+
+function cancelReply() {
+  activeReplyId = null;
+  document.getElementById('reply-area').style.display = 'none';
+  document.getElementById('admin-reply').value = '';
+}
+
+function sendAdminReply() {
+  const text = document.getElementById('admin-reply').value.trim();
+  if (!text || !activeReplyId) return;
+  // In production this would send via bot API
+  alert(`✅ Reply sent to ${adminQueue.find(u=>u.id===activeReplyId)?.name}!\n\n"${text}"`);
+  document.getElementById('admin-reply').value = '';
+  cancelReply();
+}
+
+// ── ENTRY POINT: Check if admin ──
+// In production, check tg.initDataUnsafe.user or a backend role
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('admin') === 'true') {
+  show('admin-panel');
+  renderQueue();
+}
+
+// ── BACK BUTTON ──
+if (tg) {
+  tg.BackButton.onClick(() => {
+    if (currentScreen === 'waiting' || currentScreen === 'chat') show('landing');
+    else if (currentScreen === 'admin-panel') show('landing');
+    else tg.BackButton.hide();
+  });
+}
+</script>
+
+</body>
+</html>
