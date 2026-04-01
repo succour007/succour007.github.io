@@ -425,12 +425,76 @@ line-height: 1.8;
   const tg = window.Telegram?.WebApp;
   if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0f0e17'); tg.setBackgroundColor('#0f0e17'); }
 
+  // ── DISCLAIMER ──
+  function agreeDisclaimer() {
+    const overlay = document.getElementById('disclaimer-overlay');
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.3s ease';
+    setTimeout(() => overlay.style.display = 'none', 300);
+  }
+
+  // ── START CHAT ── goes to main app
   function startChat() {
-    // Link back to your main Succour mini app
-    if (tg) tg.close();
-    else window.history.back();
+    // Show disclaimer first, then redirect
+    document.getElementById('disclaimer-overlay').style.display = 'flex';
+    document.getElementById('disc-agree-btn').onclick = function() {
+      agreeDisclaimer();
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 350);
+    };
   }
 </script>
+
+<!-- ══ DISCLAIMER POPUP ══ -->
+
+<div id="disclaimer-overlay" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); align-items:flex-end; animation:fadeIn 0.3s ease;">
+  <div style="background:#1a1829; border-top:1px solid rgba(255,255,255,0.08); border-radius:24px 24px 0 0; padding:28px 22px 36px; width:100%; animation:slideUp 0.4s ease;">
+    <div style="font-size:32px; text-align:center; margin-bottom:10px;">🌸</div>
+    <h2 style="font-family:'Playfair Display',serif; font-size:1.3rem; text-align:center; margin-bottom:6px; color:#fffffe;">Before You Begin</h2>
+    <p style="font-size:0.75rem; color:#a7a9be; text-align:center; margin-bottom:18px; line-height:1.5;">Please read this important information</p>
+    <div style="width:36px; height:2px; background:linear-gradient(90deg,#ff6b6b,#ffd166); border-radius:2px; margin:0 auto 18px;"></div>
+
+```
+<div style="display:flex; gap:10px; margin-bottom:12px;">
+  <span style="font-size:1rem; flex-shrink:0;">⚠️</span>
+  <p style="font-size:0.78rem; color:#a7a9be; line-height:1.55;"><strong style="color:#fffffe;">Not a Medical Service:</strong> Succour helpers are trained volunteers, not licensed therapists, doctors or counsellors.</p>
+</div>
+<div style="display:flex; gap:10px; margin-bottom:12px;">
+  <span style="font-size:1rem; flex-shrink:0;">💬</span>
+  <p style="font-size:0.78rem; color:#a7a9be; line-height:1.55;"><strong style="color:#fffffe;">Support Only:</strong> Conversations are for emotional support only — not medical or professional advice.</p>
+</div>
+<div style="display:flex; gap:10px; margin-bottom:12px;">
+  <span style="font-size:1rem; flex-shrink:0;">🔞</span>
+  <p style="font-size:0.78rem; color:#a7a9be; line-height:1.55;"><strong style="color:#fffffe;">Age Requirement:</strong> You must be 18 years or older to use this service.</p>
+</div>
+<div style="display:flex; gap:10px; margin-bottom:12px;">
+  <span style="font-size:1rem; flex-shrink:0;">🔒</span>
+  <p style="font-size:0.78rem; color:#a7a9be; line-height:1.55;"><strong style="color:#fffffe;">Privacy:</strong> Your data is never sold. (IT Act 2000 & DPDP Act 2023)</p>
+</div>
+
+<div style="background:rgba(255,107,107,0.08); border:1px solid rgba(255,107,107,0.2); border-radius:12px; padding:12px 14px; margin:14px 0 20px;">
+  <p style="font-size:0.74rem; color:#ff6b6b; line-height:1.6; text-align:center;">
+    🆘 <strong style="color:#ffd166;">In a crisis? Call now:</strong><br/>
+    <strong>iCall: 9152987821</strong><br/>
+    <strong>Vandrevala: 1860-2662-345</strong><br/>
+    <strong>Emergency: 112</strong>
+  </p>
+</div>
+
+<button id="disc-agree-btn" onclick="agreeDisclaimer()" style="width:100%; padding:15px; background:linear-gradient(135deg,#ff6b6b,#ffd166); color:#0f0e17; font-weight:700; font-size:0.95rem; border:none; border-radius:50px; cursor:pointer; font-family:'DM Sans',sans-serif; margin-bottom:10px;">
+  I Understand — Continue 💛
+</button>
+<p style="font-size:0.65rem; color:rgba(255,255,255,0.2); text-align:center; line-height:1.5;">By continuing you agree to our terms of use.<br/>Succour · India · Mental Healthcare Act 2017 compliant</p>
+```
+
+  </div>
+</div>
+
+<style>
+@keyframes fadeIn { from { opacity:0; } }
+@keyframes slideUp { from { transform:translateY(100%); } }
+</style>
 
 </body>
 </html>
